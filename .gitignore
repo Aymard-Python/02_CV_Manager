@@ -1,0 +1,6 @@
+# évite d’envoyer ton environnement virtuel sur GitHub
+venv/
+# évite les fichiers compilés Python
+__pycache__/
+# ignore tous les fichiers compilés
+*.pyc
