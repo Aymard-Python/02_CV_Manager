@@ -24,30 +24,7 @@ class CV():
         """
         Méthode qui permet de valider la structure, le type et le contenu 
         """
-        identity = [self.nom, self.email, self.telephone]
-        for key in identity:
-            if not isinstance(key, str):
-                raise ValueError(f"Erreur: {key} doit être une chaîne de caractère.")
-            if not key.strip():
-                raise ValueError(f" Erreur: le nom ou l'email ou téléphone est vide.")
-
-        listes = [self.competence, self.langue]
-        if not all(isinstance(liste, list) for liste in listes):
-            raise ValueError(f"Erreur: {self.competence} ou {self.langue} etc. est invalide.")
-        for item in listes:
-            for value in item:
-                if not isinstance(value, str):
-                    raise ValueError(f"Erreur: compétence ou langue contient une valeur {value} invalide.")
-                if not value.strip():
-                    raise ValueError(f"Erreur: langue ou competence est vide.")
-        
-        if not isinstance(self.loisir, list):
-            raise ValueError(f"Erreur: {self.loisir} est invalide.")
-        if self.loisir:
-            if not all(isinstance(value, str) for value in self.loisir):
-                raise ValueError(f"Erreur: {self.loisir} contient une valeur invalide.")
-
-         # Nettoyer les valeurs:
+        # Nettoyer les valeurs:
         self.nom = self.nom.strip()
         self.adresse = self._clean_dict(self.adresse)
         self.email = self.email.strip().lower()
@@ -57,7 +34,30 @@ class CV():
         self.loisir = self._clean_liste(self.loisir)
         self.experience = self._clean_listes_dict(self.experience)
         self.education = self._clean_listes_dict(self.education)
+
+        # Valider les données
+        identity = [self.nom, self.email, self.telephone]
+        for key in identity:
+            if not isinstance(key, str) or not key.strip():
+                raise ValueError(f"Erreur: champ et invalide (valeur: {key})")
+
+        listes = [self.competence, self.langue]
+        if not all(isinstance(liste, list) for liste in listes):
+            raise ValueError(f"Erreur: {self.competence} ou {self.langue} etc. est invalide.")
+        for item in listes:
+            if not item:
+                raise ValueError("Liste vide interdite.")
+            for value in item:
+                if not isinstance(value, str) or not value.strip():
+                    raise ValueError(f"Erreur: champ et invalide (valeur: {value})")
         
+        if not isinstance(self.loisir, list):
+            raise ValueError(f"Erreur: {self.loisir} est invalide.")
+        if self.loisir:
+            for value in self.loisir:
+                if not isinstance(value, str) or not value.strip():
+                    raise ValueError("Loisir invalide.")
+                
         self._validate_email()
         self._validate_phone()
         self._validate_address()
@@ -75,27 +75,36 @@ class CV():
         """
         Méthode qui permet de nettoyer une liste de dictionnaires 
         """
+        cleaned = []
+        
         for item in list_dict:
+            new_item = {}
+            
             for key, value in item.items():
                 if isinstance(value, list):
-                    item[key] = self._clean_liste(value)
+                    new_item[key] = self._clean_liste(value)
                 else:
                     if not isinstance(value, str):
                         raise ValueError(f"Erreur: la date: {value} doit être une chaine de caractère.")
                     else:
-                        item[key] = value.strip()
-        return list_dict
+                        new_item[key] = value.strip()
+                        
+            cleaned.append(new_item)
+        
+        return cleaned
 
     def _clean_dict(self, dict_ad):
         """
         Méthode qui permet de nettoyer un dictionnaire 
         """
+        cleaned = {}
+        
         for key, value in dict_ad.items():
             if not isinstance(value, str):
-                dict_ad[key] = self._clean_liste(value)
+                raise ValueError(f"Erreur: champ '{key}' invalide (valeur: {value})")
             else:
-                dict_ad[key] = value.strip()
-        return dict_ad
+                cleaned[key] = value.strip()
+        return cleaned
         
         # Valider l' email
     def _validate_email(self):
@@ -174,7 +183,7 @@ class CV():
         if not self.experience:
             raise ValueError(f"Erreur: {self.experience} est vide.")
             
-        experiences = ['poste', 'entreprise', 'date_debut', 'date_fin', 'points_cles']
+        experiences = {'poste', 'entreprise', 'date_debut', 'date_fin', 'points_cles'}
         
         for exper in self.experience:
             if not isinstance(exper, dict):
@@ -182,29 +191,21 @@ class CV():
             if not exper:
                 raise ValueError(f"Erreur: Expérience vide.")
                 
+             # Vérifier si le nombre de clés attendues dans expériences est exacte.
+            if set(exper.keys()) != experiences:
+                raise ValueError(f"Clés invalides dans expérience: {exper}")
+                
             for key, value in exper.items():
                 if key == 'points_cles':    
                     if not isinstance(value, list):
                         raise ValueError(f"Erreur: {key} doit être une liste.")
-                    if not value:
-                        raise ValueError(f"Erreur: la clé points_cles est vide.")
                     for val in value:
-                        if not isinstance(val, str):
-                            raise ValueError(f"Erreur: {key} contient des ou une valeur invalide.")
+                        if not isinstance(val, str) or not val.strip():
+                            raise ValueError("Point clé invalide.")
                 else:
-                    if not isinstance(value, str):
-                        raise ValueError(f"Erreur: {key} contient une valeur {value} invalide.")
-                    if not value.strip():
-                        raise ValueError(f"Erreur: {key} est vide.")
+                    if not isinstance(value, str) or not value.strip():
+                        raise ValueError(f"Erreur: champ '{key}' invalide (valeur: {value})")
                         
-                # Vérifier si le nombre de clés attendues dans expériences est exacte.
-            experience = set(experiences)
-            for exper in self.experience:
-                if set(exper.keys()) > experience:
-                    raise ValueError(f"Erreur: {exper} contient un nombre en trop de clés.")
-                else:
-                    if set(exper.keys()) < experience:
-                        raise ValueError(f"Erreur: {exper} contient un nombre en moins de clés.")
                              
     def _validate_studie(self):
         """
@@ -223,7 +224,7 @@ class CV():
                 raise ValueError(f"Erreur: {stud} est vide.")
             for key, value in stud.items():
                 if not isinstance(value, str):
-                    raise ValueError(f"Erreur: {value} est invalide.")
+                    raise ValueError(f"Erreur: champ '{key}' invalide (valeur: {value})")
                 if not value.strip():
                     raise ValueError(f"Erreur: {key} est vide.")
                     
