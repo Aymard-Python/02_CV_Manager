@@ -1,12 +1,14 @@
 ## Structure des données d'un CV
 import re
 import time 
+import uuid
 
 class CV():
     """
     Classe qui permet de générer le modèle d'un CV 
     """
     def __init__(self, nom, adresse, email, telephone, experience, competence, education, langue, loisir):
+        self.id = str(uuid.uuid4())
         self.nom = nom
         self.adresse = adresse
         self.email = email
@@ -23,21 +25,21 @@ class CV():
         Méthode qui permet de valider la structure, le type et le contenu 
         """
         identity = [self.nom, self.email, self.telephone]
-        if not all(isinstance(ident, str) for ident in identity):
-            raise ValueError(f"Erreur: {self.nom} ou {self.email} ou {self.telephone} est invalide.")
-        if not self.email.strip() or not self.nom.strip() or not self.telephone.strip():
-            raise ValueError(f" Erreur: {self.nom} ou {self.email} ou {self.telephone} est vide.")
+        for key in identity:
+            if not isinstance(key, str):
+                raise ValueError(f"Erreur: {key} doit être une chaîne de caractère.")
+            if not key.strip():
+                raise ValueError(f" Erreur: le nom ou l'email ou téléphone est vide.")
 
         listes = [self.competence, self.langue]
         if not all(isinstance(liste, list) for liste in listes):
             raise ValueError(f"Erreur: {self.competence} ou {self.langue} etc. est invalide.")
         for item in listes:
-            if not item:
-                raise ValueError(f"Erreur: {item} est vide.")
-            else:
-                for value in item:
-                    if not isinstance(value, str):
-                        raise ValueError(f"Erreur: {self.competence} ou {self.langue} contient une valeur {value} invalide.")
+            for value in item:
+                if not isinstance(value, str):
+                    raise ValueError(f"Erreur: compétence ou langue contient une valeur {value} invalide.")
+                if not value.strip():
+                    raise ValueError(f"Erreur: langue ou competence est vide.")
         
         if not isinstance(self.loisir, list):
             raise ValueError(f"Erreur: {self.loisir} est invalide.")
@@ -78,7 +80,10 @@ class CV():
                 if isinstance(value, list):
                     item[key] = self._clean_liste(value)
                 else:
-                    item[key] = value.strip()
+                    if not isinstance(value, str):
+                        raise ValueError(f"Erreur: la date: {value} doit être une chaine de caractère.")
+                    else:
+                        item[key] = value.strip()
         return list_dict
 
     def _clean_dict(self, dict_ad):
@@ -122,7 +127,9 @@ class CV():
             raise ValueError("Erreur: clé rue ou clé ville manquante.")
         if not isinstance(self.adresse['rue'], str) or not isinstance(self.adresse['ville'], str):
             raise ValueError(f"Erreur: la clé rue ou la clé ville contient une valeur invalide.")
-
+        if not self.adresse['rue'] or not self.adresse['ville']:
+            raise ValueError(f"Erreur: clé ville ou clé rue n'a pas de valeur.")
+            
         # Cette boucle prend en compte d'autres valeurs optionnelles de l'adresse
         for _, value in self.adresse.items():
             if not isinstance(value, str):
@@ -174,26 +181,30 @@ class CV():
                 raise ValueError(f"Erreur: {exper} est invalide.")
             if not exper:
                 raise ValueError(f"Erreur: Expérience vide.")
-            
-        # Vérifier si le nombre de clés attendues dans expériences est exacte.
-        experience = set(experiences)
-        for exper in self.experience:
-            if set(exper.keys()) != experience:
-                raise ValueError(f"Erreur: {self.experience} contient un nombre en trop de clés.")
-            
+                
             for key, value in exper.items():
-                if key != 'points_cles':
-                    if not isinstance(value, str):
-                        raise ValueError(f"Erreur: {key} contient une valeur {value} invalide.")
-                    if not value.strip():
-                        raise ValueError(f"Erreur: {key} est vide.")
-                else:
+                if key == 'points_cles':    
                     if not isinstance(value, list):
                         raise ValueError(f"Erreur: {key} doit être une liste.")
                     if not value:
                         raise ValueError(f"Erreur: la clé points_cles est vide.")
-                    if not all(isinstance(point, str) for point in value):
-                        raise ValueError(f"Erreur: {key} contient des ou une valeur invalide.")
+                    for val in value:
+                        if not isinstance(val, str):
+                            raise ValueError(f"Erreur: {key} contient des ou une valeur invalide.")
+                else:
+                    if not isinstance(value, str):
+                        raise ValueError(f"Erreur: {key} contient une valeur {value} invalide.")
+                    if not value.strip():
+                        raise ValueError(f"Erreur: {key} est vide.")
+                        
+                # Vérifier si le nombre de clés attendues dans expériences est exacte.
+            experience = set(experiences)
+            for exper in self.experience:
+                if set(exper.keys()) > experience:
+                    raise ValueError(f"Erreur: {exper} contient un nombre en trop de clés.")
+                else:
+                    if set(exper.keys()) < experience:
+                        raise ValueError(f"Erreur: {exper} contient un nombre en moins de clés.")
                              
     def _validate_studie(self):
         """
@@ -210,11 +221,12 @@ class CV():
                 raise ValueError(f"Erreur: {stud} est invalide.")
             if not stud:
                 raise ValueError(f"Erreur: {stud} est vide.")
-            if not isinstance(stud['diplome'], str) or not isinstance(stud['institution'], str) or not isinstance(stud['annee'], str):
-                raise ValueError("Erreur: la clé diplome, institution ou annee est invalide.")
-            if not stud['diplome'].strip() or not stud['institution'].strip() or not stud['annee'].strip():
-                raise ValueError("Erreur: la clé diplome ou institution ou annee est vide.")
-                
+            for key, value in stud.items():
+                if not isinstance(value, str):
+                    raise ValueError(f"Erreur: {value} est invalide.")
+                if not value.strip():
+                    raise ValueError(f"Erreur: {key} est vide.")
+                    
         # Vérifier si le nombre de clés attendues dans formation est exacte.
         studies = set(studies)
         for stud in self.education:
@@ -226,6 +238,7 @@ class CV():
         Méthode qui permet de créer un CV en format Json. 
         """
         return {
+                'id': self.id,
                 'nom': self.nom,
                 'adresse': self.adresse,
                 'email': self.email,
