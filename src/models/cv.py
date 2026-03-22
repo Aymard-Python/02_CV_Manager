@@ -36,10 +36,17 @@ class CV():
         self.education = self._clean_listes_dict(self.education)
 
         # Valider les données
-        identity = [self.nom, self.email, self.telephone]
-        for key in identity:
-            if not isinstance(key, str) or not key.strip():
-                raise ValueError(f"Erreur: champ et invalide (valeur: {key})")
+        profil = ["nom", "email", "telephone"]
+        for key in profil:
+            if not isinstance(key, str):
+                raise ValueError(f"Erreur: champ {key} invalide")
+                
+        value = [self.nom, self.email, self.telephone]
+        for val in value:
+            if not isinstance(val, str):
+                raise ValueError(f"La valeur de nom ou email ou telephone est invalide.")
+            if not val.strip():
+                raise ValueError(f"La clé nom ou email ou telephone est vide.")
 
         listes = [self.competence, self.langue]
         if not all(isinstance(liste, list) for liste in listes):
@@ -151,6 +158,10 @@ class CV():
         Méthode qui permet de valider le format des dates 
         """
         for item in self.experience:
+            
+            if 'date_debut' not in item or 'date_fin' not in item:
+                raise ValueError("Dates manquantes dans expérience.")
+                
             date_str_debut = item['date_debut']
             date_str_fin = item['date_fin']
 
@@ -191,11 +202,10 @@ class CV():
             if not exper:
                 raise ValueError(f"Erreur: Expérience vide.")
                 
-             # Vérifier si le nombre de clés attendues dans expériences est exacte.
-            if set(exper.keys()) != experiences:
-                raise ValueError(f"Clés invalides dans expérience: {exper}")
-                
             for key, value in exper.items():
+                # Vérifier si le nombre de clés attendues dans expériences est exacte.
+                self._validate_keys(exper, experiences, key)
+                
                 if key == 'points_cles':    
                     if not isinstance(value, list):
                         raise ValueError(f"Erreur: {key} doit être une liste.")
@@ -216,23 +226,25 @@ class CV():
         if not self.education:
             raise ValueError(f"Erreur: {self.education} est vide.")
             
-        studies = ['diplome', 'institution', 'annee']
+        studies = {'diplome', 'institution', 'annee'}
         for stud in self.education:
             if not isinstance(stud, dict):
                 raise ValueError(f"Erreur: {stud} est invalide.")
             if not stud:
                 raise ValueError(f"Erreur: {stud} est vide.")
             for key, value in stud.items():
+                # Vérifier si le nombre de clés attendues dans formation est exacte.
+                self._validate_keys(stud, studies, key)
                 if not isinstance(value, str):
                     raise ValueError(f"Erreur: champ '{key}' invalide (valeur: {value})")
                 if not value.strip():
                     raise ValueError(f"Erreur: {key} est vide.")
                     
-        # Vérifier si le nombre de clés attendues dans formation est exacte.
-        studies = set(studies)
-        for stud in self.education:
-            if set(stud.keys()) != studies:
-                raise ValueError(f"Erreur: {self.education} contient un nombre en trop de clés.")
+               
+                
+    def _validate_keys(self, data, expected_key, name):
+        if set(data.keys()) != expected_key:
+            raise ValueError(f"{name} invalide: {data}")
             
     def to_dict(self):
         """
