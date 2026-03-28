@@ -1,65 +1,32 @@
 import json
-from models.cv import CV
+from models.cv import CV 
 
-cv_obj = CV(
-    'NDONGO Aymard Regamey', 
-    {
-        "rue": 'Mendong', 
-        "ville": 'Yaoundé'
-        }, 
-    "aymard@gmail.com", 
-    '691-37-38-64', 
-    [
-        {
-            'poste': 'Web', 
-            'entreprise': 'PMUC', 
-            'date_debut': "2022-10", 
-            'date_fin': '2026-01', 
-            'points_cles': [
-                            "Python", 
-                            "Js"
-                        ]
-                    }
-        ], 
-    [
-        "Python",
-        "JavaScript"
-        ], 
-    [
-        {
-            'diplome': "Master", 
-            'institution': "SUp'PTIC", 
-            'annee': '2017'
-             }
-        ], 
-    [
-        "FR",
-        "EN"
-        ], 
-    [
-        "Sport"
-        ]
-)
+file_path = "../data/cvs.json"
 
-data = "../data/cvs.json"
-
-def load_cv(data):
+def load_cv(file_path):
+    """
+    Loads CV data from a JSON file.
+    """
     try:
-        with open(data, "r", encoding='utf-8') as f:
+        with open(file_path, "r", encoding='utf-8') as f:
             cv_list = json.load(f)
             return cv_list
     except FileNotFoundError:
-        print(f"Erreur: le fichier {data} n'existe pas.")
+        print(f"❌ Error: File {file_path} not found.")
         return []
     except json.JSONDecodeError:
-        print(f'Erreur: le fichier {data} est vide ou mal formaté.')
+        print(f'❌ Error: File {file_path} is empty or contains invalid JSON format.')
         return []
     
-def save_cv(cv_obj):
-    cv = load_cv(data)
-    cv.append(cv_obj.to_dict())
+def save_all(list_cv):
+    """
+    Saves the list of CVs to the JSON file.
+    """
+    try:
+        with open(file_path, "w", encoding='utf-8') as f:
+            json.dump(list_cv, f, indent=4, ensure_ascii=False)
+    except Exception as e:
+        print(f"🛑 An unexpected error occurred while saving: {e}")
 
-    with open(data, "w", encoding='utf-8') as f:
-        json.dump(cv, f, indent=4, ensure_ascii=False)
 
 
