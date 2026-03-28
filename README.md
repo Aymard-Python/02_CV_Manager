@@ -8,14 +8,36 @@ L'objectif de cette phase est de développer une **application en ligne de comma
 
 Ce projet introduit plusieurs concepts importants en programmation Python :
 
-* Programmation Orientée Objet (POO)
-* Persistance des données avec JSON
-* Validation des entrées utilisateur
-* Interaction avec l’utilisateur via une interface console
-* Organisation et architecture d’un projet Python
+🟢 Programmation Orientée Objet (POO)
+🟢 Persistance des données avec JSON
+🟢 Validation des entrées utilisateur
+🟢 Interaction avec l’utilisateur via une interface console
+🟢 Organisation et architecture d’un projet Python
 
 Ce projet est la suite logique de **la Phase 1 – CV Data Analyzer**, qui consistait à analyser des données de CV.
 Dans cette deuxième phase, l'objectif est de **gérer et manipuler ces données dynamiquement**.
+
+---
+
+# How to Run the Project
+
+Clone the repository :
+
+```
+git clone https://github.com/Aymard-Python/02_cv_Manager.git
+```
+
+Navigate to the project folder :
+
+```
+cd 02_CV_Manager
+```
+
+Run the program :
+
+```
+python src/main.py
+```
 
 ---
 
@@ -23,14 +45,14 @@ Dans cette deuxième phase, l'objectif est de **gérer et manipuler ces données
 
 Au cours des prochaines semaines, l'application intégrera progressivement les fonctionnalités suivantes :
 
-* Ajouter un nouveau CV
-* Modifier un CV existant
-* Supprimer un CV
-* Rechercher des CV par compétence ou par expérience
-* Afficher la liste des CV enregistrés
-* Valider les entrées utilisateur
-* Sauvegarder automatiquement les données au format JSON
-* Structurer le projet avec la **Programmation Orientée Objet (POO)**
+✅ Ajouter un nouveau CV
+✅ Modifier un CV existant
+✅ Supprimer un CV
+✅ Rechercher des CV par top compétence
+✅ Afficher la liste des CV enregistrés
+✅ Valider les entrées utilisateur
+✅ Sauvegarder automatiquement les données au format JSON
+✅ Structurer le projet avec la **Programmation Orientée Objet (POO)**
 
 ---
 
@@ -68,19 +90,19 @@ Au cours des prochaines semaines, l'application intégrera progressivement les f
 
 Contient les **modèles de données** utilisés dans l'application.
 
-* `cv.py` définira la **structure d'un CV** sous forme de classe Python.
+🟢 `cv.py` définira la **structure d'un CV** sous forme de classe Python.
 
 ### services
 
 Contient la **logique métier** de l'application.
 
-* `cv_manager.py` gérera les opérations sur les CV : ajout, modification, suppression et recherche.
+🟢 `cv_manager.py` gérera les opérations sur les CV : ajout, modification, suppression et recherche.
 
 ### utils
 
 Contient les **modules utilitaires**.
 
-* `json_storage.py` sera responsable du **chargement et de la sauvegarde des données JSON**.
+🟢 `json_storage.py` sera responsable du **chargement et de la sauvegarde des données JSON**.
 
 ### main.py
 
@@ -98,23 +120,23 @@ Il sera responsable de :
 
 Le projet sera développé progressivement selon les étapes suivantes :
 
-### Étape 1 – Modèle de données
+### 🏁 Étape 1 – Modèle de données
 
 Création de la **classe CV** avec la Programmation Orientée Objet.
 
-### Étape 2 – Gestion du stockage JSON
+### 🏁 Étape 2 – Gestion du stockage JSON
 
 Implémentation du chargement et de la sauvegarde des CV.
 
-### Étape 3 – Gestionnaire de CV
+### 🏁 Étape 3 – Gestionnaire de CV
 
 Création des fonctionnalités pour gérer les CV.
 
-### Étape 4 – Interface Console
+### 🏁 Étape 4 – Interface Console
 
 Création d’un menu interactif pour utiliser l'application.
 
-### Étape 5 – Validation des entrées
+### 🏁 Étape 5 – Validation des entrées
 
 Ajout de contrôles pour sécuriser les entrées utilisateur.
 
@@ -147,4 +169,4 @@ Les prochaines phases du challenge incluront :
 
 Projet réalisé dans le cadre d'un **challenge d'apprentissage Python sur 60 jours**.
 
-Le dépôt sera mis à jour progressivement à chaque nouvelle étape du projet.
+🚀 Fin du projet CV Manager.
